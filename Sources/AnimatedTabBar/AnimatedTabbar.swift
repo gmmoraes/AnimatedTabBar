@@ -25,6 +25,7 @@ public struct AnimatedTabBar: View {
         self._selectedIndex = selectedIndex
         self._prevSelectedIndex = prevSelectedIndex ?? .constant(0)
         self.internalPrevSelectedIndex = selectedIndex.wrappedValue
+        self.currentSelectedIndex = nil
         self.views = content().getViews
     }
 
@@ -34,6 +35,7 @@ public struct AnimatedTabBar: View {
         self._selectedIndex = selectedIndex
         self._prevSelectedIndex = prevSelectedIndex ?? .constant(0)
         self.internalPrevSelectedIndex = selectedIndex.wrappedValue
+        self.currentSelectedIndex = nil
         self.views = views.map { AnyView($0) }
     }
 
@@ -60,6 +62,7 @@ public struct AnimatedTabBar: View {
     @State private var tBall: CGFloat = 0
     @State private var tIndent: CGFloat = 0
     @State private var internalPrevSelectedIndex: Int
+    @State private var currentSelectedIndex: Int? = nil
 
     private let circleSize = 10.0
 
@@ -77,9 +80,12 @@ public struct AnimatedTabBar: View {
                 ButtonsBar {
                     ForEach(0..<views.count, id: \.self) { i in
                         let view = views[i].onTapGesture {
-                            prevSelectedIndex = selectedIndex
-                            selectedIndex = i
-                            didSelectIndex?(i)
+                            if currentSelectedIndex != i {
+                                prevSelectedIndex = selectedIndex
+                                currentSelectedIndex = i
+                                selectedIndex = i
+                                didSelectIndex?(i)
+                            }
                         }
                             .background(ButtonPreferenceViewSetter())
 
